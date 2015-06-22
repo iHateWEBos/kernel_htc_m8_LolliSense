@@ -105,4 +105,3 @@ MODULE_DESCRIPTION("'msm-sleeper' - Limit max frequency while screen is off");
 MODULE_LICENSE("GPL v2");
 
 late_initcall(msm_sleeper_init);
-
