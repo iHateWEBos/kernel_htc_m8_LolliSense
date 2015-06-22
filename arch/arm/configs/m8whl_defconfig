@@ -1,4 +1,4 @@
-CONFIG_LOCALVERSION="-BeyondStockᵀᴹ-M8-v4.0.0"
+CONFIG_LOCALVERSION="-BSv4_Based"
 # CONFIG_LOCALVERSION_AUTO is not set
 
 # kexec-hardboot for MultiROM support
