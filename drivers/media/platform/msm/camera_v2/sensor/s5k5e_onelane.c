@@ -21,7 +21,7 @@ struct msm_sensor_power_setting s5k5e_onelane_power_setting[] = {
 	{
 		.seq_type = SENSOR_GPIO,
 		.seq_val = SENSOR_GPIO_RESET,
-		.config_val = GPIO_OUT_LOW,
+		.config_val = GPIO_OUT_LOW,//GPIO_OUT_HIGH,
 		.delay = 20,
 	},
 	{
@@ -51,7 +51,7 @@ struct msm_sensor_power_setting s5k5e_onelane_power_setting[] = {
 	{
 		.seq_type = SENSOR_GPIO,
 		.seq_val = SENSOR_GPIO_RESET,
-		.config_val = GPIO_OUT_HIGH,
+		.config_val = GPIO_OUT_HIGH,//GPIO_OUT_LOW,
 		.delay = 80,
 	},
 	{
@@ -244,6 +244,7 @@ int32_t s5k5e_onelane_sensor_power_up(struct msm_sensor_ctrl_t *s_ctrl)
     return status;
 }
 
+//For power down sequence, keep reset pin low before Analog power off.
 int32_t s5k5e_onelane_sensor_power_down(struct msm_sensor_ctrl_t *s_ctrl)
 {
     int32_t status;
@@ -254,7 +255,7 @@ int32_t s5k5e_onelane_sensor_power_down(struct msm_sensor_ctrl_t *s_ctrl)
     s_ctrl->power_setting_array.power_setting = s5k5e_onelane_power_down_setting;
     s_ctrl->power_setting_array.size = ARRAY_SIZE(s5k5e_onelane_power_down_setting);
 
-    
+    //When release regulator, need the same data pointer from power up sequence.
     for(i = 0; i < s_ctrl->power_setting_array.size;  i++)
     {
         data_size = sizeof(s5k5e_onelane_power_setting[i].data)/sizeof(void *);

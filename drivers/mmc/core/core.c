@@ -51,7 +51,6 @@
 #define CREATE_TRACE_POINTS
 #include <trace/events/mmc.h>
 #include <trace/events/mmcio.h>
-#include <trace/events/f2fs.h>
 
 static void mmc_clk_scaling(struct mmc_host *host, bool from_wq);
 
@@ -231,9 +230,9 @@ static void show_iotop(void)
 		if (i++ < 5 && io_act->io_amount > IOREAD_DUMP_THRESHOLD)
 			pr_info("[READ IOTOP%d] %s(%u): %llu KB\n", i, io_act->task_name,
 				io_act->pid, io_act->io_amount / 1024);
-		kfree(io_act);
 		task_cnt++;
 		total_bytes += io_act->io_amount;
+		kfree(io_act);
 	}
 	if (total_bytes > IOREAD_DUMP_TOTAL_THRESHOLD)
 		pr_info("[IOTOP] READ total %u tasks, %llu KB\n", task_cnt, total_bytes / 1024);
@@ -247,9 +246,9 @@ static void show_iotop(void)
 		if (i++ < 5 && io_act->io_amount >= IOWRITE_DUMP_THRESHOLD)
 			pr_info("[WRITE IOTOP%d] %s(%u): %llu KB\n", i, io_act->task_name,
 				io_act->pid, io_act->io_amount / 1024);
-		kfree(io_act);
 		task_cnt++;
 		total_bytes += io_act->io_amount;
+		kfree(io_act);
 	}
 	spin_unlock_irqrestore(&iolist_lock, flags);
 	if (total_bytes > IOWRITE_DUMP_TOTAL_THRESHOLD)
