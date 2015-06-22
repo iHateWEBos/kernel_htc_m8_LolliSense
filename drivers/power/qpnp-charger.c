@@ -278,7 +278,7 @@ static int iusb_limit_reason;
 
 #define DWC3_DCP	2
 
-#ifdef CONFIG_ARCH_DUMMY
+#ifdef CONFIG_ARCH_MSM8226
 #define TEST_EN_SMBC_LOOP		0xE5
 #define IBAT_REGULATION_DISABLE		BIT(2)
 #endif
@@ -384,6 +384,7 @@ struct qpnp_chg_chip {
 	int				power_bank_wa_step;
 	int				power_bank_drop_usb_ma;
 	int 				is_aicl_adapter_wa_enabled;
+	int 				disable_pwrpath_after_eoc;
 	unsigned int			safe_current;
 	unsigned int			revision;
 	unsigned int			type;
@@ -1360,6 +1361,11 @@ qpnp_chg_set_appropriate_vbatdet(struct qpnp_chg_chip *chip)
 	
 	msleep(2000);
 	qpnp_chg_charge_en(chip, true);
+
+	
+	if (chip->disable_pwrpath_after_eoc && is_batt_full_eoc_stop)
+		qpnp_chg_force_run_on_batt(chip, true);
+
 	wake_unlock(&chip->set_vbatdet_lock);
 
 	return rc;
@@ -1751,14 +1757,14 @@ qpnp_chg_bat_if_batt_temp_irq_handler(int irq, void *_chip)
 {
 	struct qpnp_chg_chip *chip = _chip;
 	int batt_temp_good;
-#ifdef CONFIG_ARCH_DUMMY
+#ifdef CONFIG_ARCH_MSM8226
 	int rc;
 #endif
 
 	batt_temp_good = qpnp_chg_is_batt_temp_ok(chip);
 	pr_info("[irq]batt-temp triggered: %d\n", batt_temp_good);
 
-#ifdef CONFIG_ARCH_DUMMY
+#ifdef CONFIG_ARCH_MSM8226
 	rc = qpnp_chg_masked_write(chip, chip->buck_base + SEC_ACCESS, 0xFF, 0xA5, 1);
 	if (rc) {
 		pr_err("failed to write SEC_ACCESS rc=%d\n", rc);
@@ -1955,6 +1961,7 @@ qpnp_chg_chgr_chg_fastchg_irq_handler(int irq, void *_chip)
 #endif
 
 	if (!chip->charging_disabled) {
+		is_batt_full_eoc_stop = false;
 		schedule_delayed_work(&chip->eoc_work,
 			msecs_to_jiffies(EOC_CHECK_PERIOD_MS));
 		pm_stay_awake(chip->dev);
@@ -4335,6 +4342,23 @@ static int get_dc_chgpth_reg(void *data, u64 *val)
 	pr_debug("addr:0x%X, val:0x%X\n", (the_chip->dc_chgpth_base + addr), dc_chgpth_sts);
 	*val = dc_chgpth_sts;
 	return 0;
+}
+
+int pm8941_set_charger_after_eoc(bool enable)
+{
+	int rc = 0;
+
+	if (!the_chip) {
+		pr_err("called before init\n");
+		return -EINVAL;
+	}
+
+	qpnp_chg_force_run_on_batt(the_chip, false);
+
+	
+	qpnp_chg_charge_en(the_chip, enable);
+
+	return rc;
 }
 
 static void dump_reg(void)
@@ -6925,7 +6949,7 @@ qpnp_chg_request_irqs(struct qpnp_chg_chip *chip)
 				return rc;
 			}
 
-#ifdef CONFIG_ARCH_DUMMY
+#ifdef CONFIG_ARCH_MSM8226
 			qpnp_chg_bat_if_batt_temp_irq_handler(0, chip);
 #endif
 
@@ -7596,6 +7620,7 @@ qpnp_charger_read_dt_props(struct qpnp_chg_chip *chip)
 	OF_PROP_READ(chip, stored_pre_delta_vddmax_mv, "stored-pre-delta-vddmax-mv", rc, true);
 	OF_PROP_READ(chip, batt_stored_magic_num, "stored-batt-magic-num", rc, true);
 	OF_PROP_READ(chip, is_aicl_adapter_wa_enabled, "is-aicl-adapter-wa-enabled", rc, true);
+	OF_PROP_READ(chip, disable_pwrpath_after_eoc, "disable-pwrpath-after-eoc", rc, true);
 
 	if (rc) {
 		pr_err("failed to read required dt parameters %d\n", rc);
@@ -7820,7 +7845,7 @@ qpnp_charger_probe(struct spmi_device *spmi)
 			pr_err("node %s IO resource absent!\n",
 				spmi->dev.of_node->full_name);
 			rc = -ENXIO;
-#ifdef CONFIG_ARCH_DUMMY
+#ifdef CONFIG_ARCH_MSM8226
 			
 			break;
 #endif
@@ -7864,7 +7889,7 @@ qpnp_charger_probe(struct spmi_device *spmi)
 			pr_err("node %s IO resource absent!\n",
 				spmi->dev.of_node->full_name);
 			rc = -ENXIO;
-#ifdef CONFIG_ARCH_DUMMY
+#ifdef CONFIG_ARCH_MSM8226
 			
 			break;
 #endif
@@ -8138,7 +8163,7 @@ qpnp_charger_probe(struct spmi_device *spmi)
 	qpnp_chg_read(chip, &pmic_rev, REG_PMIC_HWREV, 1);
 #ifdef CONFIG_ARCH_MSM8974
 	pr_info("pm8941 HW revision: 0x%x\n",pmic_rev);
-#elif defined(CONFIG_ARCH_DUMMY)
+#elif defined(CONFIG_ARCH_MSM8226)
 	pr_info("pm8x26 HW revision: 0x%x\n",pmic_rev);
 #endif
 
