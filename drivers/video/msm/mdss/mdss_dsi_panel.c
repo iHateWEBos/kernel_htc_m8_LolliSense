@@ -82,6 +82,7 @@ static struct kobject *backlight_dimmer_kobj;
 /* end Backlight Dimmer */
 
 
+bool mdss_screen_on = true;
 
 void mdss_dsi_panel_pwm_cfg(struct mdss_dsi_ctrl_pdata *ctrl)
 {
@@ -531,7 +532,7 @@ static void mdss_dsi_panel_bl_ctrl(struct mdss_panel_data *pdata,
 static void mdss_dsi_display_on(struct mdss_panel_data *pdata)
 {
 	struct mdss_dsi_ctrl_pdata *ctrl = NULL;
-
+	mdss_screen_on = true;
 	ctrl = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 					panel_data);
 	if (ctrl->display_on_wait)
@@ -595,6 +596,8 @@ static int mdss_dsi_panel_off(struct mdss_panel_data *pdata)
 
 	if (ctrl->off_cmds.cmd_cnt)
 		mdss_dsi_panel_cmds_send(ctrl, &ctrl->off_cmds);
+		
+	mdss_screen_on = false;
 
 	if (ctrl->pwm_ctl_type == PWM_PMIC)
 		led_trigger_event(bl_led_trigger, 0);
