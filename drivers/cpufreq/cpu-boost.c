@@ -53,7 +53,7 @@ module_param(boost_ms, uint, 0644);
 static unsigned int sync_threshold;
 module_param(sync_threshold, uint, 0644);
 
-static unsigned int input_boost_freq;
+static unsigned int input_boost_freq = 1190400;
 module_param(input_boost_freq, uint, 0644);
 
 static unsigned int input_boost_ms = 40;
@@ -147,11 +147,14 @@ static int boost_mig_sync_thread(void *data)
 	if (!cpuboost_enable) return 0;
 
 	while (1) {
-		wait_event_interruptible(s->sync_wq,
-					s->pending || kthread_should_stop());
+		ret = wait_event_interruptible(s->sync_wq, s->pending ||
+					kthread_should_stop());
 
 		if (kthread_should_stop())
 			break;
+
+		if (ret == -ERESTARTSYS)
+			continue;
 
 		spin_lock_irqsave(&s->lock, flags);
 		s->pending = false;
@@ -183,17 +186,6 @@ static int boost_mig_sync_thread(void *data)
 		}
 		/* Force policy re-evaluation to trigger adjust notifier. */
 		get_online_cpus();
-		if (cpu_online(src_cpu))
-			/*
-			 * Send an unchanged policy update to the source
-			 * CPU. Even though the policy isn't changed from
-			 * its existing boosted or non-boosted state
-			 * notifying the source CPU will let the governor
-			 * know a boost happened on another CPU and that it
-			 * should re-evaluate the frequency at the next timer
-			 * event without interference from a min sample time.
-			 */
-			cpufreq_update_policy(src_cpu);
 		if (cpu_online(dest_cpu)) {
 			cpufreq_update_policy(dest_cpu);
 			queue_delayed_work_on(dest_cpu, cpu_boost_wq,
