@@ -247,7 +247,7 @@ void tcp_select_initial_window(int __space, __u32 mss,
 
 #ifdef CONFIG_HTC_LARGE_TCP_INITIAL_BUFFER
 	/* Lock the initial TCP window size to 64K*/
-	*rcv_wnd = 65535;
+	*rcv_wnd = 64240;
 #endif
 
 	/* Set the clamp no higher than max representable value */
