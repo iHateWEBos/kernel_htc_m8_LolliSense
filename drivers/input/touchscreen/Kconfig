@@ -1055,11 +1055,9 @@ config TOUCHSCREEN_GT9XX
 
           If unsure, say N.
 
-config SWEEP2SLEEP
-        tristate "Sweep to put device to sleep"
+config TOUCHSCREEN_SYNAPTICS_WAKE_GESTURES
+        bool "Wake gestures interface for SYNAPTICS_3k based touchscreens"
         default y
-        help
-          Say Y here to support sweep2sleep
 
 source "drivers/input/touchscreen/gt9xx/Kconfig"
 
