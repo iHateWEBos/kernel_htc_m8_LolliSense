@@ -99,7 +99,7 @@ module_param(DEBUG_FLAG_GEOMAGNETIC_ROTATION_VECTOR, int, 0600);
 static int DEBUG_FLAG_TIME = 10;
 module_param(DEBUG_FLAG_TIME, int, 0600);
 static int p_status = 9;
-static struct vib_trigger *vib_trigger = NULL;
+struct vib_trigger *vib_trigger = NULL;
 
 static void polling_do_work(struct work_struct *w);
 static DECLARE_DELAYED_WORK(polling_work, polling_do_work);
