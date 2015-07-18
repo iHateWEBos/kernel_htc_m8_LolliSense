@@ -329,7 +329,7 @@ static unsigned long firsty_time = 0, firstx_time = 0;
 static bool scr_suspended = false;
 static int s2w_switch = 0, s2w_switch_temp = 0;
 static bool s2w_switch_changed = false;
-static int s2s_switch = 0;
+static int s2s_switch = 2;
 static int dt2w_switch = 0, dt2w_switch_temp = 0;
 static bool dt2w_switch_changed = false;
 static int gestures_switch = 0, gestures_switch_temp = 0;
