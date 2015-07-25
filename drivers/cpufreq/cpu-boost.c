@@ -44,7 +44,7 @@ static struct workqueue_struct *cpu_boost_wq;
 
 static struct work_struct input_boost_work;
 
-bool cpuboost_enable = true;
+bool cpuboost_enable = false;
 module_param(cpuboost_enable, bool, 0644);
 
 static unsigned int boost_ms;
