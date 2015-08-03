@@ -37,7 +37,7 @@ static int g_count = 0;
 
 #define DEF_SAMPLING_RATE                              (35000)
 #define DEF_FREQUENCY_DOWN_DIFFERENTIAL		(10)
-#define DEF_FREQUENCY_UP_THRESHOLD		(85)
+#define DEF_FREQUENCY_UP_THRESHOLD		(90)
 #define DEF_TWO_PHASE_FREQUENCY			(1200000)
 #define DEF_SAMPLING_DOWN_FACTOR		(1)
 #define MAX_SAMPLING_DOWN_FACTOR		(100000)
@@ -187,7 +187,7 @@ static struct dbs_tuners {
 	.two_phase_freq = DEF_TWO_PHASE_FREQUENCY,
 	.freq_down_step = DEF_FREQ_DOWN_STEP,
 	.freq_down_step_barriar = DEF_FREQ_DOWN_STEP_BARRIAR,
-	.gboost = 1,
+	.gboost = 0,
 };
 
 static inline u64 get_cpu_idle_time_jiffy(unsigned int cpu, u64 *wall)
@@ -1546,7 +1546,7 @@ static int dbs_sync_thread(void *data)
 	this_dbs_info = &per_cpu(od_cpu_dbs_info, cpu);
 
 	while (1) {
-		wait_event(this_dbs_info->sync_wq,
+		wait_event_interruptible(this_dbs_info->sync_wq,
 			   sync_pending(this_dbs_info) ||
 			   kthread_should_stop());
 
