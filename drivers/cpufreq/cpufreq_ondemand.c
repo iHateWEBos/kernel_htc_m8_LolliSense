@@ -35,9 +35,9 @@
 static int g_count = 0;
 
 
-#define DEF_SAMPLING_RATE                              (35000)
+#define DEF_SAMPLING_RATE                              (50000)
 #define DEF_FREQUENCY_DOWN_DIFFERENTIAL		(10)
-#define DEF_FREQUENCY_UP_THRESHOLD		(90)
+#define DEF_FREQUENCY_UP_THRESHOLD		(80)
 #define DEF_TWO_PHASE_FREQUENCY			(1200000)
 #define DEF_SAMPLING_DOWN_FACTOR		(1)
 #define MAX_SAMPLING_DOWN_FACTOR		(100000)
