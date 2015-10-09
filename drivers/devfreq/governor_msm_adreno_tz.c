@@ -31,6 +31,7 @@ static DEFINE_SPINLOCK(tz_lock);
  * per frame for 60fps content.
  */
 #define FLOOR		        5000
+
 /*
  * MIN_BUSY is 1 msec for the sample to be sent
  */
@@ -39,6 +40,7 @@ static DEFINE_SPINLOCK(tz_lock);
 #define HIST			5
 #define TARGET			80
 #define CAP			75
+
 /*
  * Use BUSY_BIN to check for fully busy rendering
  * intervals that may need early intervention when
