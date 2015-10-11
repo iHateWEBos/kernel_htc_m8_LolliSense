@@ -3428,7 +3428,7 @@ CONFIG_STAGING=y
 # CONFIG_IIO is not set
 # CONFIG_ZRAM is not set
 # CONFIG_ZRAM_DEBUG is not set
-CONFIG_ZSMALLOC=y
+# CONFIG_ZSMALLOC is not set
 # CONFIG_FB_SM7XX is not set
 # CONFIG_USB_ENESTORAGE is not set
 # CONFIG_BCM_WIMAX is not set
